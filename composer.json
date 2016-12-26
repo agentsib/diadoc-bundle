@@ -1,0 +1,23 @@
+{
+    "name": "agentsib/diadoc-bundle",
+    "description": "Symfony bundle for Diadoc",
+    "keywords": ["diadoc"],
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ilya Kovalenko",
+            "email": "agentsib@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "AgentSIB\\DiadocBundle\\": ""
+        }
+    },
+    "require": {
+        "php": ">=5.4|^7.0",
+        "symfony/symfony": "~2.3|~3.0",
+        "agentsib/diadoc-php": "^0.0.1"
+    }
+}
