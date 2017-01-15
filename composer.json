@@ -18,6 +18,6 @@
     "require": {
         "php": ">=5.4|^7.0",
         "symfony/symfony": "~2.3|~3.0",
-        "agentsib/diadoc-php": "^0.0.1"
+        "agentsib/diadoc-php": "^0.0.2"
     }
 }

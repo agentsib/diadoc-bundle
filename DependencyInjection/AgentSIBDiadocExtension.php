@@ -40,19 +40,35 @@ class AgentSIBDiadocExtension extends Extension
         $loader->load('services.xml');
 
         $this->loadDiadocConnections($config['connections'], $container);
+        $this->loadDiadocBoxes($config['boxes'], $container);
 
-        if (!isset($config['default_connection'])) {
-            $config['default_connection'] = key($config['connections']);
+        if ($config['connections']) {
+            if (!isset($config['default_connection'])) {
+                $config['default_connection'] = key($config['connections']);
+            }
+
+            $defaultConnectionId = sprintf('agentsib_diadoc.connection.%s', $config['default_connection']);
+
+            if (!$container->hasDefinition($defaultConnectionId)) {
+                throw new ServiceNotFoundException($defaultConnectionId);
+            }
+
+            $container->setAlias('agentsib_diadoc.connection', $defaultConnectionId);
         }
 
-        $defaultConnectionId = sprintf('agentsib_diadoc.connection.%s', $config['default_connection']);
+        if ($config['boxes']) {
+            if (!isset($config['default_box'])) {
+                $config['default_box'] = key($config['boxes']);
+            }
 
-        if (!$container->hasDefinition($defaultConnectionId)) {
-            throw new ServiceNotFoundException($defaultConnectionId);
+            $defaultBoxId = sprintf('agentsib_diadoc.box.%s', $config['default_box']);
+
+            if (!$container->hasDefinition($defaultBoxId)) {
+                throw new ServiceNotFoundException($defaultBoxId);
+            }
+
+            $container->setAlias('agentsib_diadoc.box', $defaultBoxId);
         }
-
-        $container->setAlias('agentsib_diadoc.connection', $defaultConnectionId);
-
     }
 
     public function loadDiadocConnections(array $config, ContainerBuilder $container)
@@ -77,6 +93,24 @@ class AgentSIBDiadocExtension extends Extension
             }
 
             $container->setDefinition($serviceId, $connectionDefinition);
+        }
+    }
+    public function loadDiadocBoxes(array $config, ContainerBuilder $container)
+    {
+        foreach ($config as $boxName => $boxConfig) {
+            $serviceId = sprintf('agentsib_diadoc.box.%s', $boxName);
+            $boxDefinition = new DefinitionDecorator('agentsib_diadoc.box.prototype');
+
+            if (isset($boxConfig['connection']) && $boxConfig['connection']) {
+                $connectionService = new Reference(sprintf('agentsib_diadoc.connection.%s', $boxConfig['connection']));
+            } else {
+                $connectionService = new Reference('agentsib_diadoc.connection');
+            }
+
+            $boxDefinition->replaceArgument(0, $connectionService);
+            $boxDefinition->replaceArgument(1, $boxConfig['id']);
+
+            $container->setDefinition($serviceId, $boxDefinition);
         }
     }
 

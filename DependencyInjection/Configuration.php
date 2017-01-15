@@ -51,13 +51,44 @@ class Configuration implements ConfigurationInterface
                 ->canBeUnset()
                 ->prototype('array');
 
+        $boxesPrototypeNode = $rootNode
+            ->fixXmlConfig('box', 'boxes')
+            ->beforeNormalization()
+                ->ifTrue(function ($v) { return is_array($v) && !array_key_exists('boxes', $v) && array_key_exists('box', $v); })
+                ->then(function($v) {
+                    $box = $v['box'];
+                    $v['default_box'] = isset($v['default_box']) ? (string) $v['default_box'] : 'default';
+                    $v['boxes'] = array($v['default_box'] => $box);
+                    return $v;
+                })
+            ->end()
+            ->children()
+                ->arrayNode('boxes')
+                ->useAttributeAsKey('name', true)
+                ->canBeUnset()
+                ->prototype('array');
+
         $this->addConnectionsSection($connectionsPrototypeNode);
+        $this->addBoxesSection($boxesPrototypeNode);
 
         $rootNode
             ->children()
-                ->scalarNode('default_connection')->end()
+            ->scalarNode('default_connection')->defaultValue('default')->end()
+            ->end();
+        $rootNode
+            ->children()
+            ->scalarNode('default_box')->defaultValue('default')->end()
             ->end();
         return $treeBuilder;
+    }
+
+    private function addBoxesSection(ArrayNodeDefinition $nodeDefinition)
+    {
+        $nodeDefinition
+            ->children()
+                ->scalarNode('id')->info('Box ID')->end()
+                ->scalarNode('connection')->info('Connection name')->end()
+            ->end();
     }
 
     private function addConnectionsSection(ArrayNodeDefinition $nodeDefinition)

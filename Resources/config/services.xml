@@ -6,6 +6,7 @@
 
     <parameters>
         <parameter key="agentsib_diadoc.connection.prototype.class">AgentSIB\Diadoc\DiadocApi</parameter>
+        <parameter key="agentsib_diadoc.box.prototype.class">AgentSIB\Diadoc\BoxApi</parameter>
         <parameter key="agentsib_diadoc.signer_provider.prototype.openssl.class">AgentSIB\Diadoc\Model\OpensslSignerProvider</parameter>
         <parameter key="agentsib_diadoc.signer_provider.prototype.cloud_openssl.class">AgentSIB\Diadoc\Model\CloudOpensslSignerProvider</parameter>
     </parameters>
@@ -14,6 +15,10 @@
         <service id="agentsib_diadoc.connection.prototype" class="%agentsib_diadoc.connection.prototype.class%" abstract="true">
             <argument type="string" /> <!-- ddauth -->
             <argument type="string" /> <!-- signer provider -->
+        </service>
+        <service id="agentsib_diadoc.box.prototype" class="%agentsib_diadoc.box.prototype.class%" abstract="true">
+            <argument /> <!-- diadoc connection -->
+            <argument /> <!-- box_id -->
         </service>
         <service id="agentsib_diadoc.signer_provider.prototype.openssl" class="%agentsib_diadoc.signer_provider.prototype.openssl.class%" abstract="true" public="false">
             <argument type="string" /> <!-- ca -->
